@@ -1,11 +1,45 @@
 const express = require("express");
 const cors = require("cors");
+const helmet = require("helmet");
+const rateLimit = require("express-rate-limit");
+
+const authRoutes = require("./routes/authRoutes");
 
 const app = express();
 
-app.use(cors());
-app.use(express.json());
+// Security headers
+app.use(helmet());
 
+// CORS
+app.use(
+    cors({
+        origin: process.env.CLIENT_URL || "http://localhost:3000",
+        methods: ["GET", "POST", "PUT", "PATCH", "DELETE"],
+        allowedHeaders: ["Content-Type", "Authorization"]
+    })
+);
+
+// Request body size limit
+app.use(express.json({ limit: "10kb" }));
+
+// General API rate limit
+const generalLimiter = rateLimit({
+    windowMs: 15 * 60 * 1000,
+    limit: 300,
+    standardHeaders: "draft-8",
+    legacyHeaders: false,
+    message: {
+        success: false,
+        message: "Too many requests. Please try again later."
+    }
+});
+
+app.use("/api", generalLimiter);
+
+// Routes
+app.use("/api/auth", authRoutes);
+
+// Health/root endpoint
 app.get("/", (req, res) => {
     res.json({
         success: true,
