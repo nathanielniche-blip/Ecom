@@ -66,7 +66,62 @@ const orderSchema = new mongoose.Schema(
                 message: "Order must contain at least one item"
             }
         },
+        shippingAddress: {
+            fullName: {
+                type: String,
+                required: true,
+                trim: true,
+                maxlength: 100
+            },
 
+            phone: {
+                type: String,
+                required: true,
+                trim: true,
+                maxlength: 20
+            },
+
+            addressLine1: {
+                type: String,
+                required: true,
+                trim: true,
+                maxlength: 200
+            },
+
+            addressLine2: {
+                type: String,
+                trim: true,
+                maxlength: 200
+            },
+
+            city: {
+                type: String,
+                required: true,
+                trim: true,
+                maxlength: 100
+            },
+
+            state: {
+                type: String,
+                required: true,
+                trim: true,
+                maxlength: 100
+            },
+
+            postalCode: {
+                type: String,
+                required: true,
+                trim: true,
+                maxlength: 20
+            },
+
+            country: {
+                type: String,
+                required: true,
+                trim: true,
+                maxlength: 100
+            }
+        },
         totalAmountInPaise: {
             type: Number,
             required: true,

@@ -3,13 +3,26 @@ const mongoose = require("mongoose");
 const Cart = require("../models/Cart");
 const Product = require("../models/Product");
 const Order = require("../models/Order");
+const Address = require("../models/Address");
 
 const createOrder = async (req, res) => {
     const session = await mongoose.startSession();
 
     try {
         session.startTransaction();
+        const address = await Address.findOne({
+            _id: req.body.addressId,
+            user: req.user._id
+        }).session(session);
 
+        if (!address) {
+            await session.abortTransaction();
+
+            return res.status(404).json({
+                success: false,
+                message: "Address not found"
+            });
+        }
         const userId = req.user._id;
 
         const cart = await Cart.findOne({
@@ -101,6 +114,16 @@ const createOrder = async (req, res) => {
                 {
                     user: userId,
                     items: orderItems,
+                    shippingAddress: {
+                        fullName: address.fullName,
+                        phone: address.phone,
+                        addressLine1: address.addressLine1,
+                        addressLine2: address.addressLine2,
+                        city: address.city,
+                        state: address.state,
+                        postalCode: address.postalCode,
+                        country: address.country
+                    },
                     totalAmountInPaise,
                     status: "pending",
                     paymentStatus: "pending"

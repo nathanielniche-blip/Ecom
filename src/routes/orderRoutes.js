@@ -9,9 +9,11 @@ const { protect,authorize } = require("../middleware/authMiddleware");
 const validate = require("../middleware/validateMiddleware");
 
 const {
+    createOrderSchema,
     orderIdSchema,
     emptyRequestSchema,
-    updateOrderStatusSchema
+    updateOrderStatusSchema,
+
 } = require("../validators/orderValidator");
 
 const router = express.Router();
@@ -49,7 +51,7 @@ router.get(
 router.post(
     "/",
     protect,
-    validate(emptyRequestSchema),
+    validate(createOrderSchema),
     createOrder
 );
 

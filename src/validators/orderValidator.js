@@ -33,7 +33,18 @@ const updateOrderStatusSchema = z.object({
     query: z.object({}).strict()
 });
 
+const createOrderSchema = z.object({
+    body: z.object({
+        addressId: z.string().regex(objectIdRegex, "Invalid address ID")
+    }).strict(),
+
+    params: z.object({}).strict(),
+
+    query: z.object({}).strict()
+});
+
 module.exports = {
+    createOrderSchema,
     orderIdSchema,
     emptyRequestSchema,
     updateOrderStatusSchema
