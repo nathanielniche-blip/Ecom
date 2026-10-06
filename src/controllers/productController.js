@@ -75,21 +75,72 @@ const createProduct = async (req, res) => {
 
 const getProducts = async (req, res) => {
     try {
-        const products = await Product.find({
+        const {
+            page,
+            limit,
+            search,
+            category,
+            sort
+        } = req.query;
+
+        const filter = {
             isActive: true
-        })
-            .populate({
-                path: "category",
-                select: "name slug"
-            })
-            .select(
-                "name description priceInPaise stock sku category images"
-            )
-            .sort({ createdAt: -1 })
-            .lean();
+        };
+
+        // Category filter
+        if (category) {
+            filter.category = category;
+        }
+
+        // Safe name search
+        if (search) {
+            filter.name = {
+                $regex: search,
+                $options: "i"
+            };
+        }
+
+        // Safe sort allowlist
+        const sortOptions = {
+            newest: { createdAt: -1 },
+            oldest: { createdAt: 1 },
+            price_asc: { priceInPaise: 1 },
+            price_desc: { priceInPaise: -1 },
+            name_asc: { name: 1 },
+            name_desc: { name: -1 }
+        };
+
+        const sortOrder = sortOptions[sort];
+
+        const skip = (page - 1) * limit;
+
+        const [products, total] = await Promise.all([
+            Product.find(filter)
+                .populate({
+                    path: "category",
+                    select: "name slug"
+                })
+                .select(
+                    "name description priceInPaise stock sku category images"
+                )
+                .sort(sortOrder)
+                .skip(skip)
+                .limit(limit)
+                .lean(),
+
+            Product.countDocuments(filter)
+        ]);
+
+        const totalPages = Math.ceil(total / limit);
 
         res.status(200).json({
             success: true,
+            pagination: {
+                page,
+                limit,
+                total,
+                totalPages
+            },
             count: products.length,
             products
         });

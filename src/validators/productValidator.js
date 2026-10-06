@@ -150,8 +150,57 @@ const productIdSchema = z.object({
     query: z.object({}).strict()
 });
 
+const productListSchema = z.object({
+    body: z.object({}).strict().optional(),
+
+    params: z.object({}).strict(),
+
+    query: z.object({
+        page: z
+            .coerce
+            .number()
+            .int("Page must be a whole number")
+            .min(1, "Page must be at least 1")
+            .max(100000, "Page is too large")
+            .default(1),
+
+        limit: z
+            .coerce
+            .number()
+            .int("Limit must be a whole number")
+            .min(1, "Limit must be at least 1")
+            .max(50, "Limit cannot exceed 50")
+            .default(20),
+
+        search: z
+            .string()
+            .trim()
+            .max(100, "Search is too long")
+            .optional(),
+
+        category: z
+            .string()
+            .regex(objectIdRegex, "Invalid category ID")
+            .optional(),
+
+        sort: z
+            .enum([
+                "newest",
+                "oldest",
+                "price_asc",
+                "price_desc",
+                "name_asc",
+                "name_desc"
+            ])
+            .default("newest")
+    }).strict()
+});
+
+
+
 module.exports = {
     productCreateSchema,
     productUpdateSchema,
-    productIdSchema
+    productIdSchema,
+    productListSchema
 };

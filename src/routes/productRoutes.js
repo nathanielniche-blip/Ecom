@@ -18,7 +18,8 @@ const validate = require("../middleware/validateMiddleware");
 const {
     productCreateSchema,
     productUpdateSchema,
-    productIdSchema
+    productIdSchema,
+    productListSchema
 } = require("../validators/productValidator");
 
 const router = express.Router();
@@ -27,6 +28,7 @@ const router = express.Router();
 
 router.get(
     "/",
+    validate(productListSchema),
     getProducts
 );
 
