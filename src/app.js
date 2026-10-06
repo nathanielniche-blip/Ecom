@@ -4,6 +4,8 @@ const helmet = require("helmet");
 const rateLimit = require("express-rate-limit");
 
 const authRoutes = require("./routes/authRoutes");
+const categoryRoutes = require("./routes/categoryRoutes");
+const productRoutes = require("./routes/productRoutes");
 
 const app = express();
 
@@ -38,6 +40,9 @@ app.use("/api", generalLimiter);
 
 // Routes
 app.use("/api/auth", authRoutes);
+app.use("/api/categories", categoryRoutes); 
+app.use("/api/products", productRoutes);
+
 
 // Health/root endpoint
 app.get("/", (req, res) => {

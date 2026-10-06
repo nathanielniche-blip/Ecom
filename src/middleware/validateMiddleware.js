@@ -17,9 +17,17 @@ const validate = (schema) => {
             });
         }
 
-        req.body = result.data.body;
-        req.params = result.data.params;
-        req.query = result.data.query;
+        if (result.data.body !== undefined) {
+            req.body = result.data.body;
+        }
+
+        if (result.data.params !== undefined) {
+            Object.assign(req.params, result.data.params);
+        }
+
+        if (result.data.query !== undefined) {
+            Object.assign(req.query, result.data.query);
+        }
 
         next();
     };
