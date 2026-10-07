@@ -5,7 +5,7 @@ const {
     getPaymentById
 } = require("../controllers/paymentController");
 
-const { protect } = require("../middleware/authMiddleware");
+const { protect,authorize } = require("../middleware/authMiddleware");
 const validate = require("../middleware/validateMiddleware");
 
 const {

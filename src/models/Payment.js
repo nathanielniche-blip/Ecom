@@ -87,10 +87,18 @@ paymentSchema.index({
     createdAt: -1
 });
 
-paymentSchema.index({
-    provider: 1,
-    providerPaymentId: 1
-});
+paymentSchema.index(
+    { provider: 1, providerPaymentId: 1 },
+    {
+        unique: true,
+        partialFilterExpression: {
+            providerPaymentId: {
+                $exists: true,
+                $type: "string"
+            }
+        }
+    }
+);
 
 const Payment = mongoose.model("Payment", paymentSchema);
 
